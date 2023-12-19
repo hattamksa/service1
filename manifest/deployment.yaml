@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    meta.helm.sh/release-name: service1
+    meta.helm.sh/release-namespace: default 
+  labels:
+    app: service1
+    app.kubernetes.io/instance: service1
+    app.kubernetes.io/managed-by: Helm #(if use helm)
+    app.kubernetes.io/name: service1
+    app.kubernetes.io/version: 1.16.0 
+    name: service1
+    role: http
+  name: service1
+  namespace: default 
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: service1
+      app.kubernetes.io/instance: service1
+      app.kubernetes.io/name: service1
+      name: service1
+      role: http
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata: 
+      creationTimestamp: null
+      labels:
+        app: service1
+        app.kubernetes.io/instance: service1
+        app.kubernetes.io/name: service1
+        name: service1
+        role: http
+      name: service1
+    spec:
+      containers:
+      - env:
+        - name: ENV
+          value: staging
+        image: 00000000000.dkr.ecr.ap-southeast-1.amazonaws.com/service1:1
+        imagePullPolicy: Always
+        name: node
+        ports:
+        - containerPort: 3000
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 300m
+            memory: 500Mi
+          requests:
+            cpu: 300m
+            memory: 500Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: service1
+      serviceAccountName: service1
+      terminationGracePeriodSeconds: 30
